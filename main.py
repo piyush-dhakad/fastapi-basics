@@ -2,31 +2,31 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
+# Request body
+@app.post("/create-user")
+def create_user(user:dict):
+    return { "message": "User Created",
+    "data" : {
+        "name":user.get("name"),
+        "age":user.get("age")
+    }}
+ 
+
+
+
+
+
+
+
+
+
+
+
+
 #Home
 @app.get("/")
 def home():
     return { "name": "piyush" }
-
-#About
-@app.get("/about")
-def about():
-    return {"Name": "Hi i'm about "}
-
-
-#users 
-@app.get("/users")
-def get_users():
-    return { "data": [
-        {"user": 1},
-        {"user": 2},
-        {"user": 3},
-    ]}
-
-#get User #path paramters
-@app.get("/user/{user_id}")
-def get_user(user_id:int):
-    return {"user": user_id}
-
 
 # Query params
 @app.get("/user")
