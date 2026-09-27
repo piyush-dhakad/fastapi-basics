@@ -1,55 +1,70 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+
 app = FastAPI()
 
-# Address Model
-class Address(BaseModel):
-    city:str
-    pincode:int = 0
+todo = [   {
+      "id": 2,
+      "title": "this is second totod",
+      "copleted": True
+    },
+    {
+      "id": 3,
+      "title": "this is first todo",
+      "copleted": False
+    }]
 
-# user Model
-class User(BaseModel):
-    name:str
-    age:int
-    address:Address
+class Todo(BaseModel):
+    id:int
+    title:str
+    copleted:bool = False
 
-# Request body
-@app.post("/create-user")
-def create_user(user:User):
-    data = user.model_dump()
-    return { "message": "User Created",
-    "data" : data
-    }
- 
+# Create todo
+@app.post("/create_todo")
+def create_todo(todos: Todo):
+    data = todos.model_dump()
 
+    if len(todo) == 0:
+        todo.append(data)
+        return {"message": "todo added successfully", "data": data}
 
-# pydantic Base Model
-# create schemas
-# data validation
-# nested models  
+    for item in todo:
+        if item.get("id") == data.get("id"):
+            return {"message": "todo already exist", "data": data}
 
+    # loop finished, no match found → safe to append
+    todo.append(data)
+    return {"message": "todo added successfully", "data": data}
 
-
-#Home
-@app.get("/")
-def home():
-    return { "name": "piyush" }
-
-# Query params
-@app.get("/user")
-def get_user_by_id(param:str = None):
-    return { "data":param}
-
-
-#query params default parameters
-@app.get("/products")
-def get_products(limit:int = 10):
-    return { "limit": limit}
-
-# multpile query params
-@app.get("/items")
-def get_items(name:str = None, price:int = 0):
+@app.get("/todos")
+def get_totods():
     return {
-        "name": name ,
-        "price": price
+            "message": "todo fetch scueesfully",
+            "data":todo
+        }
+
+
+@app.put("/update_todo/{id}")
+def update_todo(todos: Todo, id: int):
+    data = todos.model_dump()
+
+    for index, item in enumerate(todo):          # iterate your global list
+         if item.get("id") == id:                      # compare dicts
+            todo[index] = data
+            return {
+                "message": "todo updated successfully",
+                "data": data,
+            }
+
+    return {
+        "message": "todo not found",
+        "data": None,
     }
+
+# CRUD opertions
+# create api 
+# read api
+# update api 
+# delete api 
+
+# Example project Todo API
