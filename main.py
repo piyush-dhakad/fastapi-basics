@@ -1,25 +1,32 @@
 from fastapi import FastAPI
-
+from pydantic import BaseModel
 app = FastAPI()
+
+# Address Model
+class Address(BaseModel):
+    city:str
+    pincode:int = 0
+
+# user Model
+class User(BaseModel):
+    name:str
+    age:int
+    address:Address
 
 # Request body
 @app.post("/create-user")
-def create_user(user:dict):
+def create_user(user:User):
+    data = user.model_dump()
     return { "message": "User Created",
-    "data" : {
-        "name":user.get("name"),
-        "age":user.get("age")
-    }}
+    "data" : data
+    }
  
 
 
-
-
-
-
-
-
-
+# pydantic Base Model
+# create schemas
+# data validation
+# nested models  
 
 
 
