@@ -10,6 +10,46 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
+# Dependency Injections
+
+# what is depends()
+# Reusable logic
+# Auth example intro
+
+from fastapi import Depends, Header
+
+def common_logic():
+    return {
+        "message": "common logic execute"
+    }
+
+@app.get("/")
+def home(data = Depends(common_logic)):
+    return data
+
+
+# Auth inro
+def verify_token(token: str = Header(None)):
+    if token != "myToken":
+        raise HTTPException(
+            status_code = 401,
+            detail= "Unauthorize"
+        )
+    return {
+        "User":"Auth token "
+    }
+
+
+# here for testing we need to pass token in heade3r
+@app.get("/get_token")
+def get_token(user = Depends(verify_token)):
+    return {
+        "message":"Access granted",
+        "user": user
+    }
+
+
+# ----------------------
 #  200 = success 
 #  201 = create data
 #  400 = bad request 
@@ -93,3 +133,4 @@ def get_item_by_name(name:str):
     return {
         "name": name
     }
+    
