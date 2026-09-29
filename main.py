@@ -1,70 +1,33 @@
+#  path query body params
 from fastapi import FastAPI
 from pydantic import BaseModel
 
 app = FastAPI()
 
-todo = [   {
-      "id": 2,
-      "title": "this is second totod",
-      "copleted": True
-    },
-    {
-      "id": 3,
-      "title": "this is first todo",
-      "copleted": False
-    }]
+class User(BaseModel):
+    name:str
+    age:int
 
-class Todo(BaseModel):
-    id:int
-    title:str
-    copleted:bool = False
+usersList = []
 
-# Create todo
-@app.post("/create_todo")
-def create_todo(todos: Todo):
-    data = todos.model_dump()
-
-    if len(todo) == 0:
-        todo.append(data)
-        return {"message": "todo added successfully", "data": data}
-
-    for item in todo:
-        if item.get("id") == data.get("id"):
-            return {"message": "todo already exist", "data": data}
-
-    # loop finished, no match found → safe to append
-    todo.append(data)
-    return {"message": "todo added successfully", "data": data}
-
-@app.get("/todos")
-def get_totods():
+@app.get("/create_user")
+def create_user(user:User):
+    usersList.append(user.model_dump())
     return {
-            "message": "todo fetch scueesfully",
-            "data":todo
-        }
-
-
-@app.put("/update_todo/{id}")
-def update_todo(todos: Todo, id: int):
-    data = todos.model_dump()
-
-    for index, item in enumerate(todo):          # iterate your global list
-         if item.get("id") == id:                      # compare dicts
-            todo[index] = data
-            return {
-                "message": "todo updated successfully",
-                "data": data,
-            }
-
-    return {
-        "message": "todo not found",
-        "data": None,
+        "message": "User created",
+        "data": user
     }
 
-# CRUD opertions
-# create api 
-# read api
-# update api 
-# delete api 
+@app.put("/users/{user_id}")
+def update_user(user_id:int, user:User, notify:bool = False):
+    if user_id < len(usersList):
+        usersList[user_id] = user.model_dump()
 
-# Example project Todo API
+        return {
+            "message": "User Updated",
+            "notify": notify,
+            "data": user
+        }
+    return {
+        "error": "someting went wrong"
+    }
