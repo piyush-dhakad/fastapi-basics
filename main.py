@@ -1,29 +1,48 @@
-## Response Model ##
-# Response validation
-# Hide sensitive data
-# output formatting
+# Status Codes & Response 
+# Real world professional API
+#  HTTP status code 
+#  custom Response
+#  Error handling basics
 
-
-from fastapi import FastAPI
+from fastapi import FastAPI, status, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI()
 
-class User(BaseModel):
-    name: str
-    age: int
-    password: str
+#  200 = success 
+#  201 = create data
+#  400 = bad request 
+#  404 = not found
+#  500 = server error
 
-class UserResponse(BaseModel):
-    name: str
-    age: int
 
-# response_model=UserResponse
-@app.get("/user", response_model=UserResponse)
+@app.post("/create_user", status_code= status.HTTP_201_CREATED)
+def create_user():
+    return {
+        "message": "User Created"
+    }
+
+@app.get("/user")
 def get_user():
+    return {
+        "status": "Success",
+        "message": "user fetch",
+        "data": {
+            "name": "varun",
+            "age": 28
+        }
+    }
 
-    return { 
-        "name": "Piyush Dhakad",
-        "age": "26",
-        "password": "1234"
+# Error Handling baseics
+
+@app.get("/users/{id}")
+def get_users(id:int):
+    if id != 1:
+        # raise BaseException()
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+    return {
+        "user" : "varun"
     }
